@@ -27,6 +27,9 @@ logging.info("Program launched.")
 
 with create_webdriver() as driver:
     logging.info("Firefox browser launched.")
-    driver.get("http://counteuiwleiigv3.onion/")
-    logging.info("Successfully connected to a counterfeit store!")
+    try:
+        driver.get("http://counteuiwleiigv3.onion/")
+        logging.info("Successfully connected to a counterfeit store!")
+    except WebDriverException as e:
+        logging.exception("Unable to load page. See attached exception traceback.")
     time.sleep(15)
