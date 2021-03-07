@@ -1,5 +1,6 @@
 from selenium.webdriver import Firefox
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+import logging
 
 
 def create_webdriver():
@@ -16,6 +17,7 @@ def create_webdriver():
 
         def __exit__(self, exc_type, exc_val, exc_tb):
             self.driver.quit()
+            logging.info('Firefox terminated.')
 
     firefox_profile = FirefoxProfile('/etc/tor')
 

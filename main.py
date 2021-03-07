@@ -13,7 +13,20 @@ logging.basicConfig(
     level=logging.DEBUG,
     datefmt='%d-%m-%Y %H:%M:%S')
 
+# define a Handler which writes INFO messages or higher to the sys.stderr
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+# set a format which is simpler for console use
+formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s', datefmt='%d-%m-%Y %H:%M:%S')
+# tell the handler to use this format
+console.setFormatter(formatter)
+# add the handler to the root logger
+logging.getLogger('').addHandler(console)
+
+logging.info("Program launched.")
 
 with create_webdriver() as driver:
-    driver.get("https://check.torproject.org/")
-    time.sleep(30)
+    logging.info("Firefox browser launched.")
+    driver.get("http://counteuiwleiigv3.onion/")
+    logging.info("Successfully connected to a counterfeit store!")
+    time.sleep(15)
