@@ -3,22 +3,23 @@ from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 import logging
 
 
+class WebDriver:
+    """
+    Extends the chromedriver class to be used as context manager.
+    """
+
+    def __init__(self, driver):
+        self.driver = driver
+
+    def __enter__(self):
+        return self.driver
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.driver.quit()
+        logging.info('Firefox terminated.')
+
+
 def create_webdriver():
-    class WebDriver:
-        """
-        Extends the chromedriver class to be used as context manager.
-        """
-
-        def __init__(self, driver):
-            self.driver = driver
-
-        def __enter__(self):
-            return self.driver
-
-        def __exit__(self, exc_type, exc_val, exc_tb):
-            self.driver.quit()
-            logging.info('Firefox terminated.')
-
     firefox_profile = FirefoxProfile('/etc/tor')
 
     # set some privacy settings
