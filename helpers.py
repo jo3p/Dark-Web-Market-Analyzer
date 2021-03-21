@@ -139,14 +139,16 @@ class WebCrawler:
         self.page_range = page_range
 
 
-def crawl(driver):
-    logging.info(f"Start Crawling - {driver.thread_number}")
-    for page_no in range(driver.page_range[0], driver.page_range[1]+1):
-        driver.get(f"http://worldps45uh3rhedmx7g3jgjf3vw52wkvvcastfm46fzrpwoc7f33lid.onion/category/1?page={page_no}")
+def crawl(webdriver_obj):
+    logging.info(f"Start Crawling - {webdriver_obj.thread_number}")
+    for page_no in range(webdriver_obj.page_range[0], webdriver_obj.page_range[1] + 1):
+        webdriver_obj.driver.get(
+            f"http://worldps45uh3rhedmx7g3jgjf3vw52wkvvcastfm46fzrpwoc7f33lid.onion/category/1?page={page_no}")
         # Extract listing URL's from source page
-        listing_divs = driver.find_elements_by_class_name("col-1search")
+        listing_divs = webdriver_obj.driver.find_elements_by_class_name("col-1search")
         listing_urls = [i.find_element_by_css_selector("a").get_attribute("href") for i in listing_divs]
-        logging.debug(f"Scraped page {page_no} from thread {driver.thread_number}")
-        with open(driver.file_name, 'a') as file:
+        logging.debug(f"Scraped page {page_no} from thread {webdriver_obj.thread_number}")
+        with open(webdriver_obj.file_name, 'a') as file:
             for url in listing_urls:
                 file.write("%s\n" % url)
+    webdriver_obj.exit()
