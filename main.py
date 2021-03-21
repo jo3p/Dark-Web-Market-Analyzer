@@ -30,7 +30,7 @@ logging.info("Program launched.")
 with create_webdriver() as driver:
     logging.info("Firefox browser launched.")
     try:
-        driver.get("http://worldps45uh3rhedmx7g3jgjf3vw52wkvvcastfm46fzrpwoc7f33lid.onion/login")
+        driver.get("http://worldps45uh3rhedmx7g3jgjf3vw52wkvvcastfm46fzrpwoc7f33lid.onion/")
         logging.info("Successfully connected to the store!")
     except WebDriverException as e:
         logging.exception("Unable to load page. See attached exception traceback.")
@@ -49,6 +49,7 @@ with create_webdriver() as driver:
 
     # navigate to drugs section
     driver.get(categories['Drugs'])
+    time.sleep(3)
 
     # collect all drug categories in drugs section
     drug_categories = {}  # dict containing all drug-categories (keys) and links (values)
@@ -57,4 +58,20 @@ with create_webdriver() as driver:
         drug_categories[drug_name] = int(drug_amount)
     drug_names = list(drug_categories.keys())  # list containing all drug names as stripped strings
 
-    time.sleep(100)
+    # extract listing URL's from source page
+    listing_divs = driver.find_elements_by_class_name("col-1search")
+    listing_URLs = [i.find_element_by_css_selector("a").get_attribute("href") for i in listing_divs]
+
+    with open('listing_URLs.txt', 'a') as file:
+        for URL in listing_URLs:
+            file.write("%s\n" % URL)
+
+    no_of_pages = int(
+        driver.find_element_by_class_name('lastP').find_element_by_css_selector("a").get_attribute("href").split("=")[
+            -1])
+    partitions = 4
+    step = no_of_pages / partitions
+
+    tuples = [(round(step * i) + 1, round(step * (i + 1))) for i in range(partitions)]
+
+
