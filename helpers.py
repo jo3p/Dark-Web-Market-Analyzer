@@ -154,4 +154,10 @@ def crawl(webdriver_obj):
         with open(webdriver_obj.file_name, 'a') as file:
             for url in listing_urls:
                 file.write("%s\n" % url)
+
+        # store the listings on the page to disk.
+        for url in listing_urls:
+            webdriver_obj.driver.get(url)
+            with open("data/" + url.replace("/", "-"), 'a') as file:
+                file.write(webdriver_obj.driver.page_source)
     webdriver_obj.exit()
