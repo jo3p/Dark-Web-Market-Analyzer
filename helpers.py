@@ -87,6 +87,9 @@ class WebDriver:
                 password_element.send_keys(password)
                 login_time = Select(self.driver.find_element_by_css_selector('[name="session_time"]'))
                 login_time.select_by_value('360')
+                self.driver.execute_script(
+                    "window.open('http://worldps45uh3rhedmx7g3jgjf3vw52wkvvcastfm46fzrpwoc7f33lid.onion/captcha.png', "
+                    "'captcha-tab');")
             except NoSuchElementException:
                 logging.error('Could not navigate to login page.')
         try:  # explicitly wait for the user to enter CAPTCHA after entering credentials, then move to homepage
