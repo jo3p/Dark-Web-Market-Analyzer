@@ -1,4 +1,5 @@
 import logging
+import os
 from helpers import init_logging, WebDriver, WebCrawler, crawl
 from multiprocessing.pool import ThreadPool
 
@@ -26,6 +27,9 @@ crawler_list = [WebCrawler(driver=driver_list[i].driver, file_number=i+1, page_r
 
 for driver in driver_list:
     driver.run()
+
+if not os.path.exists('data'):
+    os.makedirs('data')
 
 with ThreadPool(n_partitions) as p:
     p.map(crawl, crawler_list)
