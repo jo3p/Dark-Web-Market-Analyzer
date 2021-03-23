@@ -67,31 +67,46 @@ class WebDriver:
         firefox_profile.set_preference("permissions.default.image", 2)
         self.driver = Firefox(firefox_profile=firefox_profile)
 
-    def login(self):
-        username = 'sdfu3422532'
-        password = 'yu@53%sgsdfg67!te'
-        try:  # explicitly wait for login page to appear. manually fill page-entry CAPTCHA
+    def run(self):
+        logging.info("Firefox browser launched.")
+        # open the store's homepage
+        try:
+            self.driver.get("http://worldps45uh3rhedmx7g3jgjf3vw52wkvvcastfm46fzrpwoc7f33lid.onion/")
+            logging.info("Successfully connected to the store!")
+        except WebDriverException as e:
+            logging.exception("Unable to load page. See attached exception traceback.")
+            self.driver.quit()
+
+        # explicitly wait for login page to appear. manually fill page-entry CAPTCHA
+        try:
             WebDriverWait(self.driver, 100).until(EC.presence_of_element_located((By.NAME, 'username')))
         except TimeoutException:
             self.driver.quit()
             logging.error('Timeout when entering CAPTCHA.')
         finally:
-            try:
-                self.driver.execute_script(
-                    "window.open('http://worldps45uh3rhedmx7g3jgjf3vw52wkvvcastfm46fzrpwoc7f33lid.onion/captcha.png', "
-                    "'captcha-tab');")
-                username_element = self.driver.find_element_by_css_selector('[name="username"]')
-                username_element.click()
-                username_element.clear()
-                username_element.send_keys(username)
-                password_element = self.driver.find_element_by_css_selector('[name="password"]')
-                password_element.click()
-                password_element.clear()
-                password_element.send_keys(password)
-                login_time = Select(self.driver.find_element_by_css_selector('[name="session_time"]'))
-                login_time.select_by_value('360')
-            except NoSuchElementException:
-                logging.error('Could not navigate to login page.')
+            pass
+
+    def login(self):
+        username = 'sdfu3422532'
+        password = 'yu@53%sgsdfg67!te'
+        try:
+            self.driver.get("http://worldps45uh3rhedmx7g3jgjf3vw52wkvvcastfm46fzrpwoc7f33lid.onion/login")
+            self.driver.execute_script(
+                "window.open('http://worldps45uh3rhedmx7g3jgjf3vw52wkvvcastfm46fzrpwoc7f33lid.onion/captcha.png', "
+                "'captcha-tab');")
+            username_element = self.driver.find_element_by_css_selector('[name="username"]')
+            username_element.click()
+            username_element.clear()
+            username_element.send_keys(username)
+            password_element = self.driver.find_element_by_css_selector('[name="password"]')
+            password_element.click()
+            password_element.clear()
+            password_element.send_keys(password)
+            login_time = Select(self.driver.find_element_by_css_selector('[name="session_time"]'))
+            login_time.select_by_value('360')
+        except NoSuchElementException:
+            logging.error('Could not navigate to login page.')
+            self.driver.quit()
         try:  # explicitly wait for the user to enter CAPTCHA after entering credentials, then move to homepage
             WebDriverWait(self.driver, 100).until(EC.presence_of_element_located((By.ID, 'information')))
         except TimeoutException:
@@ -99,16 +114,6 @@ class WebDriver:
             logging.error('Timeout when entering CAPTCHA.')
         finally:
             pass
-
-    def run(self):
-        logging.info("Firefox browser launched.")
-        try:
-            self.driver.get("http://worldps45uh3rhedmx7g3jgjf3vw52wkvvcastfm46fzrpwoc7f33lid.onion/")
-            logging.info("Successfully connected to the store!")
-        except WebDriverException as e:
-            logging.exception("Unable to load page. See attached exception traceback.")
-        # login and return to homepage
-        self.login()
 
     def browse_to_drugs(self):
         # checking main categories on marketplace
@@ -140,6 +145,10 @@ class WebCrawler:
         self.thread_number = file_number
         self.file_name = f"listing_URLs_{file_number}.txt"
         self.page_range = page_range
+
+    def exit(self):
+        self.driver.quit()
+        logging.info('Firefox terminated.')
 
 
 def crawl(webdriver_obj):
