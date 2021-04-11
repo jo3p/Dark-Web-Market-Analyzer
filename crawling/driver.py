@@ -7,12 +7,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import json
+import os
 
 
 class WebDriver:
-    def __init__(self, n_partitions=1):
+    def __init__(self, n_partitions: int = 1):
         # Load parameter settings
-        with open('input/best_parameters.txt') as f:
+        with open('crawling/firefox_parameters.json') as f:
             self.parameters = json.load(f)
         self.driver = None
         self.n_partitions = n_partitions  # set the amount of partitions, default = 1
@@ -26,12 +27,13 @@ class WebDriver:
             self.driver.get("http://worldps45uh3rhedmx7g3jgjf3vw52wkvvcastfm46fzrpwoc7f33lid.onion/")
             logging.info("Connected to the store")
         except WebDriverException:
-            self.exit(message='Exeption: Unable to load page. See attached exception traceback.')  # quit
+            self.exit(message='Exception: Unable to load page. See attached exception traceback.')  # quit
         # Fill in page entry captcha
-        self.wait_for_captcha(by='By.NAME', value='username')
+        self.wait_for_captcha(by=By.NAME, value='username')
         # Login to marketplace
         self.login()
-        if master:  # If the driver instance is the master, we determine the paritions and close the connection
+        if master:  # If the driver instance is the master, we determine the partitions and close the connection
+            print('should not run!')
             # Go to the drugs page
             self.browse_to_drugs()
             partitions = self.get_partitions()
@@ -52,8 +54,6 @@ class WebDriver:
             self.exit(message='Error: Timeout when entering CAPTCHA.')
 
     def login(self):
-        username = 'sdfu3422532'
-        password = 'yu@53%sgsdfg67!te'
         try:
             self.driver.get("http://worldps45uh3rhedmx7g3jgjf3vw52wkvvcastfm46fzrpwoc7f33lid.onion/login")
             self.driver.execute_script(
@@ -62,19 +62,17 @@ class WebDriver:
             username_element = self.driver.find_element_by_css_selector('[name="username"]')
             username_element.click()
             username_element.clear()
-            username_element.send_keys(username)
+            username_element.send_keys(os.environ['username'])
             password_element = self.driver.find_element_by_css_selector('[name="password"]')
             password_element.click()
             password_element.clear()
-            password_element.send_keys(password)
+            password_element.send_keys(os.environ['password'])
             login_time = Select(self.driver.find_element_by_css_selector('[name="session_time"]'))
             login_time.select_by_value('360')
         except NoSuchElementException:
             self.exit(message='Error: Could not navigate to login page. ')
-            # explicitly wait for the user to enter CAPTCHA after entering credentials, then move to homepage
-            self.wait_for_captcha(by='By.ID', value='information')
-        # finally:
-        #     pass
+        # explicitly wait for the user to enter CAPTCHA after entering credentials, then move to homepage
+        self.wait_for_captcha(by=By.ID, value='information')
 
     def browse_to_drugs(self):
         # checking main categories on marketplace
