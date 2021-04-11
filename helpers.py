@@ -154,19 +154,24 @@ class WebCrawler:
 def crawl(webdriver_obj):
     logging.info(f"Start Crawling - {webdriver_obj.thread_number}")
     for page_no in range(webdriver_obj.page_range[0], webdriver_obj.page_range[1] + 1):
+        """ Navigate to the listings overview page """
         webdriver_obj.driver.get(
             f"http://worldps45uh3rhedmx7g3jgjf3vw52wkvvcastfm46fzrpwoc7f33lid.onion/category/1?page={page_no}")
-        # Extract listing URL's from source page
+
+        """ Extract listing URL's from overview page """
         listing_divs = webdriver_obj.driver.find_elements_by_class_name("col-1search")
         listing_urls = [i.find_element_by_css_selector("a").get_attribute("href") for i in listing_divs]
         logging.debug(f"Scraped page {page_no} from thread {webdriver_obj.thread_number}")
+
+        """ Append listing URL to file """
         with open(webdriver_obj.file_name, 'a') as file:
             for url in listing_urls:
                 file.write("%s\n" % url)
 
-        # store the listings on the page to disk.
+        """ Save page source to disk in separate folder """
         for url in listing_urls:
             webdriver_obj.driver.get(url)
             with open("data/" + url.replace("/", "-"), 'a') as file:
                 file.write(webdriver_obj.driver.page_source)
+
     webdriver_obj.exit()

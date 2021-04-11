@@ -69,6 +69,7 @@ class CaptchaCollector:
                 if save_result:
                     pass
                 else:
+                    driver.exit()
                     break
                 i += 1
 
