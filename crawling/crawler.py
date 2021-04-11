@@ -2,13 +2,13 @@ from crawling.driver import WebDriver
 import logging
 from datetime import date
 from helpers.cd import create_directory
-import multiprocessing
 
 
-class WebCrawler(WebDriver, multiprocessing.Process):
+class WebCrawler(WebDriver):
     def __init__(self, file_number, page_range):
-        super(WebCrawler, self).__init__()  # Inherit all methods and properties
+        # super(WebCrawler, self).__init__()  # Inherit all methods and properties
         # multiprocessing.Process.__init__(self)
+        super().__init__()
         self.thread_number = file_number
         self.file_name = f"listing_URLs_{file_number}.txt"
         self.page_range = page_range
