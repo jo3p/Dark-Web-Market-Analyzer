@@ -1,17 +1,24 @@
-from driver import WebDriver
+from crawling.driver import WebDriver
 import logging
+from datetime import date
+from helpers.cd import create_directory
+import multiprocessing
 
 
-class WebCrawler(WebDriver):
+class WebCrawler(WebDriver, multiprocessing.Process):
     def __init__(self, file_number, page_range):
-        super(WebCrawler, self).__init__()  # Inheret all methods and properties
+        super(WebCrawler, self).__init__()  # Inherit all methods and properties
+        # multiprocessing.Process.__init__(self)
         self.thread_number = file_number
         self.file_name = f"listing_URLs_{file_number}.txt"
         self.page_range = page_range
-        # Create a webdriver instance with WebDriver class and Login to the marketplace
-        self.run(master=False)  # load home page, solve captcha, and login.
+        print(self.parameters)
 
     def crawl(self):
+        # Create a webdriver instance with WebDriver class and Login to the marketplace
+        self.run(master=False)  # load home page, solve captcha, and login.
+        # create data directory
+        create_directory(path='data')
         logging.info(f"Start Crawling - {self.thread_number}")
         for page_no in range(self.page_range[0], self.page_range[1] + 1):
             # Navigate to the listings overview page
@@ -28,6 +35,8 @@ class WebCrawler(WebDriver):
             # Save page source to disk in separate folder
             for url in listing_urls:
                 self.driver.get(url)
-                with open("data/" + url.replace("/", "-"), 'a') as file:
+                directory = f"data/{date.today()}"
+                create_directory(path=directory)
+                with open(directory + '/' + url.replace("/", "-"), 'a') as file:
                     file.write(self.driver.page_source)
         self.exit()
