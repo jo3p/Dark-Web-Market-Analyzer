@@ -33,7 +33,6 @@ class WebDriver:
         # Login to marketplace
         self.login()
         if master:  # If the driver instance is the master, we determine the partitions and close the connection
-            print('should not run!')
             # Go to the drugs page
             self.browse_to_drugs()
             partitions = self.get_partitions()
@@ -49,7 +48,7 @@ class WebDriver:
     def wait_for_captcha(self, by, value):
         # explicitly wait for login page to appear. manually fill page-entry CAPTCHA
         try:
-            WebDriverWait(self.driver, 100).until(EC.presence_of_element_located((by, value)))
+            WebDriverWait(self.driver, 200).until(EC.presence_of_element_located((by, value)))
         except TimeoutException:
             self.exit(message='Error: Timeout when entering CAPTCHA.')
 
