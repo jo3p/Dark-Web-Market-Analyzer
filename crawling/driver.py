@@ -8,6 +8,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import json
 import os
+import numpy as np
+import time
 
 
 class WebDriver:
@@ -19,6 +21,9 @@ class WebDriver:
         self.n_partitions = n_partitions  # set the amount of partitions, default = 1
 
     def run(self, master=True):
+        if not master:
+            # Make the system wait for n seconds, to prevent too many drivers initializing simultaneously
+            time.sleep(np.random.randint(1, 10))
         # Initiate webdriver instance
         self.create_driver()
         logging.info("Firefox browser launched.")

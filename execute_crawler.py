@@ -13,7 +13,7 @@ if __name__ == '__main__':
     log.init_logging()
     logging.info("Program launched.")
     # Create master webdriver
-    n_partitions = int(input('n_partitions'))
+    n_partitions = int(input('Enter number of partitions: '))
     first_driver = WebDriver(n_partitions)
     partitions = first_driver.run()
     # Create crawler instances and execute in parallel
