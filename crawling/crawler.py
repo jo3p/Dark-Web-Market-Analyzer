@@ -44,6 +44,7 @@ class WebCrawler(WebDriver):
             for url in listing_urls:
                 self.save_listing(url)
                 self.save_seller()
+        logging.info("Crawling finished")
         self.exit()
 
     def save_listing(self, url):
