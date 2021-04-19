@@ -10,6 +10,8 @@ import json
 import os
 import numpy as np
 import time
+from helpers.cd import create_directory
+from datetime import date
 
 
 class WebDriver:
@@ -38,6 +40,16 @@ class WebDriver:
         # Login to marketplace
         self.login()
         if master:  # If the driver instance is the master, we determine the partitions and close the connection
+            # How many listings are there?
+            main_menu_element = self.driver.find_element_by_class_name("mainmenu")
+            menu_text = main_menu_element.text.split('\n')
+            n_drug_listings = menu_text[1]
+            create_directory(path="data")
+            # Save amount of listings to file
+            date_directory = f"data/{date.today()}"
+            create_directory(path=date_directory)
+            with open(f"{date_directory}/n_listings.txt", 'w') as file:
+                file.write(n_drug_listings)
             # Go to the drugs page
             self.browse_to_drugs()
             partitions = self.get_partitions()
