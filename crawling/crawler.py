@@ -2,6 +2,7 @@ from crawling.driver import WebDriver
 import logging
 from datetime import date
 from helpers.cd import create_directory
+import selenium.common.exceptions as selenium_exception
 
 
 class WebCrawler(WebDriver):
@@ -43,6 +44,7 @@ class WebCrawler(WebDriver):
             for url in listing_urls:
                 self.save_listing(url)
                 self.save_seller()
+        logging.info("Crawling finished")
         self.exit()
 
     def save_listing(self, url):
@@ -54,7 +56,10 @@ class WebCrawler(WebDriver):
 
     def save_seller(self):
         # Extract listing description
-        ld = self.driver.find_element_by_css_selector(".listDes > p:nth-child(2) > b:nth-child(1) > a:nth-child(1)")
+        try:
+            ld = self.driver.find_element_by_css_selector(".listDes > p:nth-child(2) > b:nth-child(1) > a:nth-child(1)")
+        except selenium_exception.NoSuchElementException:
+            return "NOT FOUND"
         # Extract seller page url and save to disk
         seller_url = ld.get_attribute("href")
         # Check if the seller is already visited
