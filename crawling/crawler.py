@@ -67,5 +67,5 @@ class WebCrawler(WebDriver):
             self.driver.get(seller_url)
             file_name = f"{self.sellers_directory}/{seller_url.replace('/', '-')}"
             with open(file_name, 'a') as file:
-                file.write("%s\n" % seller_url)
+                file.write(self.driver.page_source)
             self.sellers.append(seller_url)
