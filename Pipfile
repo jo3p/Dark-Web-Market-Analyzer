@@ -9,6 +9,8 @@ selenium = "*"
 nordvpn-switcher = "*"
 pyodbc = "*"
 sqlalchemy = "*"
+fastparquet = "*"
+pyarrow = "*"
 
 [dev-packages]
 
