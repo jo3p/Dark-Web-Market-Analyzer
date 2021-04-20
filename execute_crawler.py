@@ -1,11 +1,13 @@
 from crawling.driver import WebDriver
 from crawling.crawler import WebCrawler
+from scraping.scraper import DocumentParser
 import logging
 from multiprocessing.pool import ThreadPool
 from helpers import log
 from helpers.redirect import job
 import time
-
+import datetime as dt
+import pandas as pd
 
 if __name__ == '__main__':
     begin = time.time()
@@ -20,4 +22,10 @@ if __name__ == '__main__':
     with ThreadPool(n_partitions) as p:
         p.map(job, crawler_list)
     end = time.time()
-    logging.info(f"Total execution time: {end-begin}")
+    logging.info(f"Total execution time: {end - begin}")
+
+    # Scrape crawled data
+    parser = DocumentParser(dt.date.today())
+    parser.scrape()
+    parser.save_as_parquet()
+    test_df = pd.read_parquet(parser.listings_save_location)
