@@ -38,7 +38,7 @@ class DbConnection:
         rows_to_add.to_sql(name=relation_name,
                            con=self.engine,
                            if_exists='append',
-                           index_label='id')
+                           index=False)
 
     def test_db_connection(self, relation_name: str, sql_query_path: Path = None) -> pd.DataFrame:
         """
