@@ -12,3 +12,4 @@ def init_logging():
     formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s', datefmt='%d-%m-%Y %H:%M:%S')
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
+    return logging

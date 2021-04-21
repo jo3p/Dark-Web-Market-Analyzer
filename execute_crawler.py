@@ -3,7 +3,7 @@ from crawling.crawler import WebCrawler
 from scraping.scraper import DocumentParser
 import logging
 from multiprocessing.pool import ThreadPool
-from helpers import log
+from helpers.log import init_logging
 from helpers.redirect import job
 import time
 import datetime as dt
@@ -12,7 +12,7 @@ import pandas as pd
 if __name__ == '__main__':
     begin = time.time()
     # Initialize logging
-    log.init_logging()
+    logging = init_logging()
     # Create master webdriver
     n_partitions = int(input('Enter number of parallel threads: '))
     first_driver = WebDriver(n_partitions)
