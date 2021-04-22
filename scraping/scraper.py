@@ -6,16 +6,15 @@ import pandas as pd
 from time import time
 from helpers.database import DbConnection
 from helpers.log import init_logging
-
-logging = init_logging()
+import logging
 
 
 class DocumentParser:
     """
     Class that parses (scrapes) the crawled webpages in the "listings" and "sellers" directories
     """
-
-    def __init__(self):
+    def __init__(self, verbose=False):
+        self.verbose = verbose
         # Define the folder structure
         self.work_dir = Path(os.getcwd())
         self.scrape_date = self.process_input_date(
@@ -30,40 +29,37 @@ class DocumentParser:
         self.listings = pd.DataFrame()
         self.sellers = pd.DataFrame()
 
-    def scrape(self):
+    def scrape(self, scrape_listings=True, scrape_sellers=False):
         """
         Method that initiates the parsing of listings and sellers and appends the results to the corresponding dataframe
         """
-
         logging.info('Started parsing!')
-        # scrape listings
-        i = 0  # TODO: mooier maken
-        no_of_listings = len(os.listdir(self.listings_dir))
-        for file in os.listdir(self.listings_dir):
-            i += 1
-            logging.info(f'Parsing listing {i}/{no_of_listings}: {file.replace("-", "/")}')
-            listing = self.parse_listing(self.listings_dir / file)
+        if scrape_listings:
+            # scrape listings
+            no_of_listings = len(os.listdir(self.listings_dir))
+            for i, file in enumerate(os.listdir(self.listings_dir)):
+                if self.verbose:
+                    logging.info(f'Parsing listing {i}/{no_of_listings}: {file.replace("-", "/")}')
+                listing = self.parse_listing(self.listings_dir / file)
 
-            # append listing (pd.Series) to listings (pd.DataFrame)
-            if len(self.listings) == 0:
-                self.listings = pd.concat([self.listings, listing.to_frame().T])
-            elif listing['Title'].lower() not in self.listings['Title'].str.lower().values:
-                self.listings = pd.concat([self.listings, listing.to_frame().T])
-
+                # append listing (pd.Series) to listings (pd.DataFrame)
+                if len(self.listings) == 0:
+                    self.listings = pd.concat([self.listings, listing.to_frame().T])
+                elif listing['Title'].lower() not in self.listings['Title'].str.lower().values:
+                    self.listings = pd.concat([self.listings, listing.to_frame().T])
         # scrape sellers
-        i = 0
-        no_of_sellers = len(os.listdir(self.sellers_dir))
-        for file in os.listdir(self.sellers_dir):
-            i += 1
-            logging.info(f'Parsing seller {i}/{no_of_sellers}: {file.replace("-", "/")}')
+        if scrape_sellers:
+            no_of_sellers = len(os.listdir(self.sellers_dir))
+            for i, file in enumerate(os.listdir(self.sellers_dir)):
+                if self.verbose:
+                    logging.info(f'Parsing seller {i}/{no_of_sellers}: {file.replace("-", "/")}')
+                seller = self.parse_seller(self.sellers_dir / file)
 
-            seller = self.parse_seller(self.sellers_dir / file)
-
-            # append listing (pd.Series) to listings (pd.DataFrame)
-            if len(self.sellers) == 0:
-                self.sellers = pd.concat([self.sellers, seller.to_frame().T])
-            elif seller['Seller Name'].lower() not in self.sellers['Seller Name'].str.lower().values:
-                self.sellers = pd.concat([self.sellers, seller.to_frame().T])
+                # append listing (pd.Series) to listings (pd.DataFrame)
+                if len(self.sellers) == 0:
+                    self.sellers = pd.concat([self.sellers, seller.to_frame().T])
+                elif seller['Seller Name'].lower() not in self.sellers['Seller Name'].str.lower().values:
+                    self.sellers = pd.concat([self.sellers, seller.to_frame().T])
 
     def parse_listing(self, file: Path) -> pd.Series:
         """
@@ -217,17 +213,3 @@ class DocumentParser:
             date_elements = [int(elem) for elem in raw_input.split('-')]
             day, month, year = date_elements[0], date_elements[1], date_elements[2]
             return dt.date(year, month, day)
-
-
-if __name__ == '__main__':
-    start_time = time()
-
-    parser = DocumentParser()
-    parser.scrape()
-    parser.save_as_parquet()
-
-    test_df_listings = pd.read_parquet(parser.listings_save_location)
-    test_df_sellers = pd.read_parquet(parser.sellers_save_location)
-
-    parser.save_to_sql_db()
-    logging.info(f'Finished parsing! Total execution time: {time() - start_time}s')
