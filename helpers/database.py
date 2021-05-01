@@ -1,5 +1,4 @@
 import urllib
-
 import pandas as pd
 import pyodbc
 import sqlalchemy
@@ -48,7 +47,7 @@ class DbConnection:
         :return: Pandas DataFrame that contains
         """
 
-        # open SQL queryfile if given as parameter
+        # open SQL query file if given as parameter
         if sql_query_path:
             with open(sql_query_path) as file:
                 query = file.read()

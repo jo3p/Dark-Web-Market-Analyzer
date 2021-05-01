@@ -24,7 +24,6 @@ class DocumentParser:
         self.sellers_dir = self.scrape_dir / 'sellers'
         self.listings_save_location = self.scrape_dir / 'scraped_listings.gzip'
         self.sellers_save_location = self.scrape_dir / 'scraped_sellers.gzip'
-
         # Define an attribute for the final result
         self.listings = pd.DataFrame()
         self.sellers = pd.DataFrame()
@@ -67,16 +66,12 @@ class DocumentParser:
         :param file: Path of the html file to be parsed
         :return: pd.Series with the scraped results
         """
-
         # Create empty Series to store results in
         result = pd.Series(dtype='object')
-
         # Load html file
         listing = self.open_html(file)
-
         # Select most important info element on page
         list_desc = listing.find(class_='listDes')
-
         # Get general stats
         result['Seller Name'] = list_desc.find('a').text.strip()
         result['Scrape Date'] = self.scrape_date
@@ -93,12 +88,10 @@ class DocumentParser:
         sold_since_str = list_desc.find('span').text.split('sold since')[1].strip()
         sold_since_dt = dt.datetime.strptime(sold_since_str, '%b %d, %Y').date()
         result['Sold Since'] = sold_since_dt
-
         # Get trust levels
         levels = list_desc.find_all('span', class_='levelSet')
         result['Vendor Level'] = int(''.join(char for char in levels[0].text.strip() if char.isdigit()))
         result['Trust Level'] = int(''.join(char for char in levels[1].text.strip() if char.isdigit()))
-
         # Get table content
         list_desc_content = list_desc.find_all('td')
         result['Product Class'] = list_desc_content[1].text.strip()
@@ -108,7 +101,6 @@ class DocumentParser:
         result['Ships To'] = list_desc_content[7].text.strip()
         result['Ends In'] = list_desc_content[9].text.strip()
         result['Payment'] = list_desc_content[11].text.strip()
-
         if quantity_left != 'Sold Out':
             # Get prices if product is not sold out
             result['Price USD'] = list_desc.find(class_='padp').text.split('USD')[-1].strip()
@@ -116,7 +108,6 @@ class DocumentParser:
         else:
             result['Price USD'] = 'Sold Out'
             result['Price BTC'] = 'Sold Out'
-
         # Get full description and specify correct datatype (string)
         result['Listing Description'] = str(listing.find(class_='tabcontent'))
         return result
@@ -127,13 +118,10 @@ class DocumentParser:
         :param file: Path of the html file to be parsed
         :return: pd.Series with the scraped results
         """
-
         # Create empty Series to store results in
         result = pd.Series(dtype='object')
-
         # Load html file
         seller = self.open_html(file)
-
         # Select most important info element on page
         seller_desc = seller.find(class_='right-content')
         result['Seller Name'] = seller_desc.find('h1').text.split('|')[0].strip()
@@ -143,13 +131,11 @@ class DocumentParser:
         last_online_dt = dt.datetime.strptime(last_online_str, '%b %d, %Y').date()
         result['Last Online'] = last_online_dt
         user_info = seller.find(class_='user_info_mid_head')
-
         result['Seller Name'] = user_info.text.split('(')[0].strip()
         result['Seller Number'] = int(user_info.find_all('span')[0].text.strip()[1:-1])
         levels = user_info.find_all('span', class_='user_info_trust')
         result['Vendor Level'] = ''.join(char for char in levels[0].text.strip() if char.isdigit())
         result['Trust Level'] = ''.join(char for char in levels[1].text.strip() if char.isdigit())
-
         seller_rating = seller_desc.find(class_='seller_rating').find('table').find_all('td')
         result['Positive Feedback (12 months)'] = int(seller_rating[3].text.strip())
         result['Neutral Feedback (12 months)'] = int(seller_rating[7].text.strip())
@@ -165,13 +151,10 @@ class DocumentParser:
         """
         Method that saves the results as a parquet file
         """
-
         logging.info('Writing files to disk as parquet (gzip) files.')
-
         # Reset indexes
         self.listings.reset_index(inplace=True, drop=True)
         self.sellers.reset_index(inplace=True, drop=True)
-
         # Save to disk
         self.listings.to_parquet(self.listings_save_location, engine='pyarrow', compression='gzip')
         self.sellers.to_parquet(self.sellers_save_location, engine='pyarrow', compression='gzip')
@@ -180,7 +163,6 @@ class DocumentParser:
         """
         Method that stores the results in a SQL database
         """
-
         # Create database connection and write dataframes to database
         logging.info('Storing results in SQL Database.')
         db_connection = DbConnection()
@@ -194,7 +176,6 @@ class DocumentParser:
         :param file: file Path
         :return: BeautifulSoup object
         """
-
         with open(file, 'r') as file:
             raw_file = file.read()
         soup = BeautifulSoup(raw_file, 'html.parser')

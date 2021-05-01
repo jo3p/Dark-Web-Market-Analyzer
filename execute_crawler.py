@@ -1,6 +1,5 @@
 from crawling.driver import WebDriver
 from crawling.crawler import WebCrawler
-import logging
 from multiprocessing.pool import ThreadPool
 from helpers.log import init_logging
 from helpers.redirect import job
