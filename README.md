@@ -1,4 +1,4 @@
-# Dark-Web-Market-Analyzer
+# Dark Web Market Analyzer
 
 The goal of this project was to crawl and scrape information from a Dark Web Marketplace, to extract useful insights.
 The project comes with a Pipfile, meaning that the environment can be set up automatically. There are
