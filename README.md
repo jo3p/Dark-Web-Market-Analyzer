@@ -11,14 +11,6 @@ The second access point (execute scraper.py) executes the scraping process, it m
 (class DocumentParser). The results are written both to disk (as a parquet file) and to the SQL database.
 For the latter process, the database.py file is consulted.
 
-The code depends on a number of factors, which are stated here for reproduction purposes. First, the
-Selenium web-driver requires a Firefox and Tor installation. Furthermore, in the create driver function
-from the WebDriver class, a path to the torrc file is set (i.e. ’/etc/tor/’). This might need to be changed,
-depending on where TOR is installed. Additionally, the Firefox profile parameters are saved in a JSON file.
-Users might need to adapt these to correctly configure the web-driver.
-In addition, the code depends on the ODBC drivers for SQL servers on Linux to connect to the database.
-The drivers can be installed with help of this tutorial (for Ubuntu).
-Lastly, a number of environment variables are utilized to log into the marketplace and database. These
-should be replaced with the credentials of the user.
+The code depends on a number of factors, which are stated here for reproduction purposes. First, the Selenium web-driver requires a Firefox and Tor installation. Additionally, the Selenium web-driver requires a gecko driver to be installed. Furthermore, in the \emph{create\_driver} function from the WebDriver class, a path to the \emph{torrc} file from the TOR browser is set (i.e. '/etc/tor/'). This might need to be changed, depending on where TOR is installed. Additionally, the Firefox profile parameters are saved in a JSON file. Users might need to adapt these to correctly configure the web-driver. In addition, the code depends on the ODBC drivers for SQL servers on Linux to connect to the database. Lastly, a number of environment variables are utilized to log into the marketplace and database. These should be replaced with the credentials of the user.
 
 Please note that browsing the Dark Web can be dangerous. Implement proper security precautions before executing this code. 
